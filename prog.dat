@@ -1,5 +1,3 @@
-% all regs have init val of 0
-% mem content in form: addr, val
 0, 111
 8, 14
 16, 5
