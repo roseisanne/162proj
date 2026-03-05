@@ -60,11 +60,16 @@ int main ()
         }
         else 
         {
-            if (ss >> loopLabel && lopeLable == "loop")
+            if (line.find(':') != std::string::npos)
             {
-                
+                loopLabel = line.substr(0, line.find(':'));
+                labelMap[loopLabel] = instrLines.size();
+                instrLines.push_back(line.substr(line.find(':') + 1)); //store instr without label
             }
-            instrLines.push_back(line);
+            else 
+            {
+                instrLines.push_back(line);
+            }
         }
     }
     //checking
@@ -78,6 +83,12 @@ int main ()
     for (int i = 0; i < instrLines.size(); i++)
     {
         std::cout << instrLines.at(i) << "\n";
+    }
+
+    std::cout << "Labels:\n";
+    for (const auto& p : labelMap)
+    {
+        std::cout << p.first << " -> " << p.second << "\n";
     }
 
     return 0;

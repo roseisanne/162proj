@@ -1,4 +1,6 @@
 #pragma once
+
+#include "tomasulo.h"
 //fetch unit fetched NF=1 instr every cycle
 
 //when branch is fetched/decoded, fetch unit stalls until branch instr
@@ -51,11 +53,29 @@ struct Instruction
 {
     std::string op;
     //int reg
-    int rd, rs1, rs2;
-    //FP registers
-    int frd, frs1, frs2;
+    int rd{-1};
+    int rs1{-1};
+    int rs2{-1};
     //immed
-    int imm;
+    int imm{0};
     //branch traget
-    int targetPC;
+    int targetPC{-1};
+    int pc{-1}; //for debugging
 };
+
+struct CPU
+{
+    int PC{0};
+    int cycles{0};
+
+    std::vector<Instruction> instrMem;
+    std::map<int
+
+    std::vector<ReservationStation> RS;
+
+    std::vector<FunctionalUnit> FUs;
+
+    CDB cdb;
+
+    Decode decode;
+}
