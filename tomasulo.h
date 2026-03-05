@@ -5,13 +5,13 @@ struct ReservationStation
 {
     bool busy{false};
     std::string op;
-    int Vj{0};
-    int Vk{0};
-    std::string Qj{-1};
-    std::string Qk{-1};
+    float Vj{0};
+    float Vk{0};
+    int Qj{-1};
+    int Qk{-1};
     int A{0}; //ld/str addresses
     int dest{-1}; //destination register
-    int result{-1}; //result of the operation
+    float result{-1}; //result of the operation
 };
 
 struct RegisterStatus
@@ -34,4 +34,4 @@ struct CDB
     bool busy{false};
     int tag{-1}; //tag of the reservation station broadcasting result
     float value{0}; //value being broadcast
-}
+};

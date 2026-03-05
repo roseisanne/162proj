@@ -63,19 +63,24 @@ struct Instruction
     int pc{-1}; //for debugging
 };
 
+struct Decode
+{
+    bool busy{false};
+    Instruction instr;
+};
+
 struct CPU
 {
     int PC{0};
     int cycles{0};
 
     std::vector<Instruction> instrMem;
-    std::map<int
+    std::map<int, double> dataMem;
 
     std::vector<ReservationStation> RS;
-
     std::vector<FunctionalUnit> FUs;
 
     CDB cdb;
 
     Decode decode;
-}
+};
