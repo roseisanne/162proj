@@ -1,16 +1,14 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
 #include <cmath>
-#include <string>
 #include <fstream>
-#include <sstream>
 #include <stdlib.h>
-#include <map>
 
-#include "CPU.h"
+#include "parse.h"
+#include "writeback.h"
+#include "execute.h"
+#include "issue.h"
+#include "fetch.h"
 
-//data memory <int, int>
+//data memory <int, double (for the .0 stuff)>
 //instr memory <string>
 
 //file input function
@@ -35,15 +33,12 @@ std::vector<std::string> loadData(const std::string& filename)
     return lines;
 }
 
-//2. handel labels -> map loop to  current instr index, remove label from line and store clean instr
-//3. convert to structured instr
-
 int main ()
 {
-    std::vector<std::string> data = loadData("prog.dat");
-    std::map<int, int> dataMem;
+    std::vector<std::string> data{loadData("prog.dat")};
+    std::map<int, double> dataMem;
     std::vector<std::string> instrLines;
-    std::map<std::string, int> labelMap;
+    std::map<std::string, int> labelMap; //get loop lable
 
     for (const auto& line: data)
     {
@@ -64,7 +59,8 @@ int main ()
             {
                 loopLabel = line.substr(0, line.find(':'));
                 labelMap[loopLabel] = instrLines.size();
-                instrLines.push_back(line.substr(line.find(':') + 1)); //store instr without label
+                //store instr without label
+                instrLines.push_back(line.substr(line.find(':') + 2));
             }
             else 
             {
@@ -72,6 +68,76 @@ int main ()
             }
         }
     }
+
+    CPU cpu;
+
+    cpu.dataMem = dataMem;
+    cpu.instrMem = parseInstructions(instrLines, labelMap);
+
+    bool programComplete = false;
+
+    //start program
+    while (!programComplete)
+    {
+        cpu.cycles++;
+        std::cout << "Cycle " << cpu.cycles << " PC=" << cpu.PC 
+          << " branchPending=" << cpu.branchPending 
+          << " decode.busy=" << cpu.decode.busy << "\n"
+          << " R1=" << cpu.registers[1] 
+          << " R1ready=" << cpu.regStatus[1].ready << "\n";
+
+        if (cpu.cycles > 200) { std::cout << "INFINITE LOOP\n"; break; }
+
+        writeback(cpu);
+        execute(cpu);
+        issue(cpu);
+        fetch(cpu);
+
+        bool rsBusy = false;
+        for (auto& rs : cpu.RS)
+        {
+            if (rs.busy) { rsBusy = true; }
+        }
+        bool fuBusy = false;
+        for (auto& fu : cpu.FUs) if (fu.busy) fuBusy = true;
+        if (cpu.PC >= cpu.instrMem.size() &&
+            !cpu.decode.busy &&
+            !rsBusy &&
+            !fuBusy)
+        {
+            programComplete = true;
+        }
+    }
+    std::cout << "----------------------\n";
+
+    //prgram results
+    std::cout << "Program finished in " << cpu.cycles << " cycles.\n";
+    std::cout << "total Stall cycles: " << 
+    cpu.fetchStalls + cpu.issueStalls + cpu.executeStalls << " cycles.\n";
+
+    //what is in data mem after program
+    std::cout << "\nData Memory:\n";
+    for (const auto& pair : cpu.dataMem)
+    {
+        std::cout << "  [" << pair.first << "] = " << pair.second << "\n";
+    }
+    std::cout << "----------------------\n";
+
+    //what are in the registers
+    std::cout << "\nRegisters:\n";
+    for (int i = 0; i < 10; i++)
+    {
+        std::cout << "  R" << i << " = " << cpu.registers[i] << "\n";
+    }
+    for (int i = 32; i < 42; i++) 
+    {
+       std::cout << "  F" << (i-32) << " = " << cpu.registers[i] << "\n";
+    }
+
+    return 0;
+}
+
+/*
     //checking
     std::cout << "Mem contents:\n";
     for (const auto& pair : dataMem)
@@ -90,6 +156,31 @@ int main ()
     {
         std::cout << p.first << " -> " << p.second << "\n";
     }
+    */
+    // std::cout << "Parsed Instr:\n";
+    // for (const auto& instr : cpu.instrMem)
+    // {
+    //     instr.print();
+    //     std::cout << "------------------------\n";
+    // }
 
-    return 0;
-}
+    // for (int i = 0; i < 3; i++)
+    // {
+
+    //     std::cout << "After Cycle " << i + 1 << ":\n";
+    //     for (auto& rs : cpu.RS)
+    //     {
+    //         if (rs.busy) 
+    //         { 
+    //             rs.printStation();
+    //             std::cout << "\n";
+    //         }
+    //     }
+    // }
+
+    // std::cout << "\nRegister status table:\n";
+    // for (int i = 0; i < 8; ++i)  // just R0-R7 for testing
+    // {
+    //     std::cout << "R" << i << ": ready=" << cpu.regStatus[i].ready 
+    //     << " tag=" << cpu.regStatus[i].tag << "\n";
+    // } 
