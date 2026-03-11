@@ -20,7 +20,16 @@ struct Instruction
 
     //for debugging purposes
     int pc{-1};
-    void print() const;
+    void print()
+    {
+    std::cout << "PC: " << pc << "\n" <<
+    "Opcode: " << op << "\n" <<
+    "rd: " << rd << "\n" << 
+    "rs1: " << rs1 << "\n" <<
+    "rs2: " << rs2 << "\n" <<
+    "imm: " << imm << "\n" <<
+    "targetPC: " << targetPC << "\n";
+    }
 };
 
 //to know that an instr is still being used
@@ -65,6 +74,7 @@ struct CPU
         RS.push_back(ReservationStation("fpdiv"));
         RS.push_back(ReservationStation("bu"));
 
+        //
         FUs.push_back({false, "int"});
         FUs.push_back({false, "ldst"});
         FUs.push_back({false, "fpadd"});

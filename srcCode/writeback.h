@@ -12,7 +12,7 @@ void writeback(CPU& cpu)
         if (cdbUseCurrCycle) { break; }
 
         int rsIndex = fu.rsTag;
-        ReservationStation& rs = cpu.RS [rsIndex];
+        ReservationStation& rs = cpu.RS[rsIndex];
 
         //handle instrs only reading
         if (rs.op == "bne")

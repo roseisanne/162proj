@@ -20,6 +20,7 @@ void issue(CPU& cpu)
     //stall if no RS avail for that op
     if(freeRS == -1 || cpu.branchPending) 
     {
+        if(freeRS == -1 && !cpu.branchPending) { cpu.issueStalls++; }
         cpu.issueStalls++;
         return; 
     }
