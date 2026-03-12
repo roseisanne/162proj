@@ -167,4 +167,4 @@ int main ()
           << " decode.busy=" << cpu.decode.busy << "\n"
           << " R1=" << cpu.registers[1] 
           << " R1ready=" << cpu.regStatus[1].ready << "\n";
-    */
+*/

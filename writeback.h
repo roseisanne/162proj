@@ -12,7 +12,7 @@ void writeback(CPU& cpu)
         if (cdbUseCurrCycle) { break; }
 
         int rsIndex = fu.rsTag;
-        ReservationStation& rs = cpu.RS [rsIndex];
+        ReservationStation& rs = cpu.RS[rsIndex];
 
         //handle instrs only reading
         if (rs.op == "bne")
@@ -20,10 +20,13 @@ void writeback(CPU& cpu)
             bool taken = rs.Vj != rs.Vk;
             if (taken) { cpu.PC = rs.A; } //branch taken
             //else PC go to next sequential instruction
-            cpu.decode.busy = false; // branch resolved, fetch can continue
+            cpu.decode.busy = false; 
+            //branch resolved, fetch can continue
             cpu.branchPending = false;
         }
-        else if (rs.op == "fsd") { cpu.dataMem[rs.Vj + rs.A] = rs.Vk; }
+        else if (rs.op == "fsd") { 
+            cpu.dataMem[rs.Vj + rs.A] = rs.Vk; 
+        }
         else //else, instr that only write
         {
             broadcastResult(cpu, rsIndex, ALUforWrite(cpu, rs));

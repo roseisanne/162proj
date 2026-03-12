@@ -8,7 +8,7 @@ void issue(CPU& cpu)
     Instruction instr = cpu.decode.instr;
 
     //Find open RS
-    int freeRS = -1;
+    int freeRS{-1};
     for (int i = 0; i < cpu.RS.size(); i++)
     {
         if(!cpu.RS[i].busy && cpu.RS[i].type == rsType(instr.op))

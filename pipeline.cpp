@@ -87,7 +87,7 @@ int cyclesForOperation(ReservationStation& rs)
 
 float ALUforWrite(CPU& cpu, ReservationStation& rs)
 {
-    float result = 0;
+    float result{};
     if (rs.op == "addi") { result = rs.Vj + rs.A; }
     else if (rs.op == "add") { result = rs.Vj + rs.Vk; }
     else if (rs.op == "fld") { result = cpu.dataMem[rs.Vj + rs.A]; }

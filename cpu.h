@@ -74,7 +74,6 @@ struct CPU
         RS.push_back(ReservationStation("fpdiv"));
         RS.push_back(ReservationStation("bu"));
 
-        //
         FUs.push_back({false, "int"});
         FUs.push_back({false, "ldst"});
         FUs.push_back({false, "fpadd"});
